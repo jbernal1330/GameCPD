@@ -1,10 +1,12 @@
-
+// INCLUDEs FILE
 #include "libs.h"
 
+// FRAMEBUFFER
 void framebuffer_resize_callback(GLFWwindow* window, int fbW, int fbH) {
 	glViewport(0, 0, fbW, fbH);
 }
 
+// SHADERS
 bool loadShaders(GLuint& program) {
 	bool loadSuccess = true;
 
@@ -99,6 +101,7 @@ bool loadShaders(GLuint& program) {
 	return loadSuccess;
 }
 
+// MAIN PROGRAM
 int main() {
 
 	// GLFW INIT
@@ -113,7 +116,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // MAJOR.MINOR --> Versión de Open GL, en este caso, se usa 4.4 (MAJOR.MINOR)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // ¿Se puede cambiar el tamaño de la ventana?
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); // ¿Se puede cambiar el tamaño de la ventana?
 
 	// * glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE) --> SOLO PARA MAC OS
 
@@ -161,7 +164,11 @@ int main() {
 	}
 
 	// END OF PROGRAM
+	glfwDestroyWindow(window);
 	glfwTerminate();
+
+	// DELETE PROGRAM
+	glDeleteProgram(core_program);
 
 	return 0;
 }
