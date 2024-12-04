@@ -1,6 +1,12 @@
 // INCLUDEs FILE
 #include "libs.h"
 
+void updateInput(GLFWwindow* window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+}
+
 // FRAMEBUFFER
 void framebuffer_resize_callback(GLFWwindow* window, int fbW, int fbH) {
 	glViewport(0, 0, fbW, fbH);
@@ -138,6 +144,18 @@ int main() {
 		glfwTerminate();
 	}
 
+	// OPENGL OPTIONS
+	glEnable(GL_DEPTH_TEST); // Permite la profundidad de campo en el juego
+
+	glEnable(GL_CULL_FACE); // No se dibujará lo que no se muestra al jugador
+	glCullFace(GL_BACK); // No se dibuja lo que está detrás del jugador
+	glFrontFace(GL_CCW); // CCW --> Counter Clock Wise --> Dibujo de los vértices en sentido contrario de las manecillas del reloj
+
+	glEnable(GL_BLEND); // Blend colors
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Características del blend
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Los polígonos se dibujaran atrás y delante mediante Fill
+
 	// SHADER INIT
 	GLuint core_program;
 	if (!loadShaders(core_program)) {
@@ -150,6 +168,7 @@ int main() {
 		glfwPollEvents(); // Permite interactuar con la ventana (cerrar, minimizar, etc)
 
 		// UPDATE
+		updateInput(window);
 
 		// DRAW
 		// *Clear
