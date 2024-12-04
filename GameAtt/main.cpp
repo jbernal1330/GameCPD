@@ -3,19 +3,21 @@
 
 Vertex vertices[] =
 {
-	// Position                         // Color                         // Texcoords
-	glm::vec3(0.0f, 0.5f, 0.f),         glm::vec3(1.f, 0.f, 0.f),        glm::vec2(0.f, 1.f),
+	// Position                         // Color (R,G,B)                 // Texcoords
+	glm::vec3(-0.5f, 0.5f, 0.f),        glm::vec3(1.f, 0.f, 0.f),        glm::vec2(0.f, 1.f),
 	glm::vec3(-0.5f, -0.5f, 0.f),       glm::vec3(0.f, 1.f, 0.f),        glm::vec2(0.f, 0.f),
-	glm::vec3(0.5f, -0.5f, 0.f),        glm::vec3(0.f, 0.f, 1.f),        glm::vec2(1.f, 0.f)
+	glm::vec3(0.5f, -0.5f, 0.f),        glm::vec3(0.f, 0.f, 1.f),        glm::vec2(1.f, 0.f),
+	glm::vec3(0.5f, 0.5f, 0.f),         glm::vec3(1.f, 1.f, 0.f),        glm::vec2(0.f, 0.f)
 };
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 
 // Creación de triángulos a partir de vértices
 GLuint indices[] =
 {
-	0, 1, 2
+	0, 1, 2, // Triangle 1 
+	0, 2, 3  // Triangle 2
 };
-unsigned nrOfIndices = sizeof(indices) / sizeof(Vertex);
+unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
 
 // INPUT MANAGING
 void updateInput(GLFWwindow* window) {
@@ -171,6 +173,8 @@ int main() {
 	glEnable(GL_BLEND); // Blend colors
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Características del blend
 
+	// Se rellenan los triángulos según su color
+	// GL_LINE es otra opción
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Los polígonos se dibujaran atrás y delante mediante Fill
 
 	// SHADER INIT
@@ -233,8 +237,8 @@ int main() {
 		glBindVertexArray(VAO);
 		
 		// *Draw
-		glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
-		//glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0); Función de respaldo, sin funcionar
+		// glDrawArrays(GL_TRIANGLES, 0, nrOfVertices); Función de respaldo, no usa índices
+		glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0); 
 
 
 		// *End Draw
