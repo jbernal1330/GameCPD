@@ -16,7 +16,7 @@ unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 GLuint indices[] =
 {
 	0, 1, 2, // Triangle 1 
-	0, 2, 3  // Triangle 2
+	//0, 2, 3  // Triangle 2
 };
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
 
@@ -261,6 +261,7 @@ int main() {
 		glUseProgram(core_program);
 
 		// Update uniforms
+		glUniform1i(glGetUniformLocation(core_program, "texture0"), 0);
 
 		// *Activate texture
 		glActiveTexture(GL_TEXTURE0);
@@ -277,6 +278,11 @@ int main() {
 		// *End Draw
 		glfwSwapBuffers(window); // Une los front y back buffers para cerrar el dibujado
 		glFlush();
+
+		glBindVertexArray(0);
+		glUseProgram(0);
+		glActiveTexture(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	// END OF PROGRAM
