@@ -1,6 +1,7 @@
 // INCLUDEs FILE
 #include "libs.h"
 
+// Vertices para el gráfico
 Vertex vertices[] =
 {
 	// Position                         // Color (R,G,B)                 // Texcoords
