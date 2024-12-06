@@ -1,3 +1,11 @@
+/*
+ Universidad Sergio Arboleda
+ Computación Paralela y Distribuida
+ Proyecto final 3er Corte
+
+ Hecho por: Juan Bernal, ...
+*/
+
 // INCLUDEs FILE
 #include "libs.h"
 
@@ -146,11 +154,11 @@ int main() {
 
 	// * glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE) --> SOLO PARA MAC OS
 
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Game App", NULL, NULL); // Ancho, alto, título, fullscreen, ventana
-
-	glfwSetFramebufferSizeCallback(window, framebuffer_resize_callback); // Actualiza el Frame buffer al cambiar de tamaño la ventana
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Game CPD", NULL, NULL); // Ancho, alto, título, fullscreen, ventana
 
 	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight); // Frame buffer para la ventana
+	glfwSetFramebufferSizeCallback(window, framebuffer_resize_callback); // Actualiza el Frame buffer al cambiar de tamaño la ventana
+
 	glViewport(0, 0, framebufferWidth, framebufferHeight); // ¿Qué tanto de la ventana se dibujará? --> De 0 a los valores seleccionados en las variables framebuffer
 
 	glfwMakeContextCurrent(window); // Contexto en la ventana --> IMPORTANTE PARA GLEW
@@ -272,7 +280,7 @@ int main() {
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture --> 0 = No active texture
 	SOIL_free_image_data(image1); // Eliminar imagen de la memoria
 
-	// MODEL MATRIX
+	// INIT MODEL MATRIX
 	glm::mat4 ModelMatrix(1.f); // Inicializar matriz 4x4
 	ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.f, 0.f, 0.f)); // Translación de ModelMatrix
 	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(1.f, 0.f, 0.f)); // Rotación en X
@@ -280,10 +288,30 @@ int main() {
 	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(0.f, 0.f, 1.f)); // Rotación en Z
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.f)); // Escalado --> Aumenta el tamaño de la imagen
 
+	// CAMERA
+	glm::vec3 camPosition(0.f, 0.f, 1.f);
+	glm::vec3 worldUp(0.f, 1.f, 0.f);
+	glm::vec3 camFront(0.f, 0.f, -1.f);
+	glm::mat4 ViewMatrix(1.f);
+	ViewMatrix = glm::lookAt(camPosition, camPosition + camFront, worldUp);
+
+	float fov = 90.f;
+	float nearPlane = 0.1f; // Para que no se pegue demasiado al cuerpo --> Evitar Clipping
+	float farPlane = 1000.f; // Rango máximo de visión
+	glm::mat4 ProjectionMatrix(1.f);
+
+	ProjectionMatrix = glm::perspective(glm::radians(fov), 
+		static_cast<float>(framebufferWidth) / framebufferHeight,
+		nearPlane,
+		farPlane
+	);
+
 	glUseProgram(core_program);
 
-	// Move, rotate and scale init (no necesario)
+	// INIT UNIFORMS
 	glUniformMatrix4fv(glGetUniformLocation(core_program, "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix)); // Primera inicialización
+	glUniformMatrix4fv(glGetUniformLocation(core_program, "ViewMatrix"), 1, GL_FALSE, glm::value_ptr(ViewMatrix));
+	glUniformMatrix4fv(glGetUniformLocation(core_program, "ProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(ProjectionMatrix));
 
 	glUseProgram(0);
 
@@ -299,7 +327,7 @@ int main() {
 
 		// DRAW
 		// *Clear
-		glClearColor(0.f, 0.f, 0.f, 1.f); // (R,G,B) | 4 arg para transparencia --> 1.f = no transparente
+		glClearColor(1.f, 1.f, 1.f, 1.f); // BACKGROUND (R,G,B,A) | 4 arg para transparencia --> 1.f = no transparente
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		// *Use a program
@@ -317,6 +345,17 @@ int main() {
 		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.f)); // Escalado de imágenes
 
 		glUniformMatrix4fv(glGetUniformLocation(core_program, "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+
+		glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+
+		ProjectionMatrix = glm::mat4(1.f);
+		ProjectionMatrix = glm::perspective(glm::radians(fov),
+			static_cast<float>(framebufferWidth) / framebufferHeight,
+			nearPlane,
+			farPlane
+		);
+
+		glUniformMatrix4fv(glGetUniformLocation(core_program, "ProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(ProjectionMatrix));
 
 		// *Activate texture
 		glActiveTexture(GL_TEXTURE0);
