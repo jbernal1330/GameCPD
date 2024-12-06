@@ -349,14 +349,15 @@ int main() {
 	glUseProgram(core_program);
 
 	// LIGHTS
-	glm::vec3 lightPos0(0.f, 0.f, -2.f);
+	glm::vec3 lightPos0(0.f, 0.f, 2.f);
 
 	// INIT UNIFORMS
 	glUniformMatrix4fv(glGetUniformLocation(core_program, "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix)); // Primera inicialización
 	glUniformMatrix4fv(glGetUniformLocation(core_program, "ViewMatrix"), 1, GL_FALSE, glm::value_ptr(ViewMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(core_program, "ProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(ProjectionMatrix));
 
-	glUniform3fv(glGetUniformLocation(core_program, "lightPos"), 1, glm::value_ptr(lightPos0));
+	glUniform3fv(glGetUniformLocation(core_program, "lightPos0"), 1, glm::value_ptr(lightPos0));
+	glUniform3fv(glGetUniformLocation(core_program, "cameraPos"), 1, glm::value_ptr(camPosition));
 
 	glUseProgram(0);
 
