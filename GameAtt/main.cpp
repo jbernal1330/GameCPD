@@ -272,6 +272,20 @@ int main() {
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture --> 0 = No active texture
 	SOIL_free_image_data(image1); // Eliminar imagen de la memoria
 
+	// MODEL MATRIX
+	glm::mat4 ModelMatrix(1.f); // Inicializar matriz 4x4
+	ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.f, 0.f, 0.f)); // Translación de ModelMatrix
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(1.f, 0.f, 0.f)); // Rotación en X
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(0.f, 1.f, 0.f)); // Rotación en Y
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(0.f, 0.f, 1.f)); // Rotación en Z
+	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.f)); // Escalado --> Aumenta el tamaño de la imagen
+
+	glUseProgram(core_program);
+
+	// Move, rotate and scale init (no necesario)
+	glUniformMatrix4fv(glGetUniformLocation(core_program, "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix)); // Primera inicialización
+
+	glUseProgram(0);
 
 
 
@@ -294,6 +308,15 @@ int main() {
 		// Update uniforms
 		glUniform1i(glGetUniformLocation(core_program, "texture0"), 0);
 		glUniform1i(glGetUniformLocation(core_program, "texture1"), 1);
+
+		// Move, rotate and scale
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.f, 0.f, 0.f)); // Movimiento X, Y, Z
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(1.f, 0.f, 0.f)); // Rotación en X
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(2.f), glm::vec3(0.f, 1.f, 0.f)); // Rotación en Y
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(0.f, 0.f, 1.f)); // Rotación en Z
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.f)); // Escalado de imágenes
+
+		glUniformMatrix4fv(glGetUniformLocation(core_program, "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix));
 
 		// *Activate texture
 		glActiveTexture(GL_TEXTURE0);

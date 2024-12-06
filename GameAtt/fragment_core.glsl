@@ -12,7 +12,6 @@ uniform sampler2D texture1;
 void main(){
 	//fs_color = vec4(vs_color, 1.f);
 	//fs_color = texture(texture0, vs_texcoord); // pintado simple de textura
-	//fs_color = texture(texture0, vs_texcoord) * texture(texture1, vs_texcoord) * vec4(vs_color, 1.f); // mezclar imágenes y color
-	fs_color = texture(texture1, vs_texcoord) * texture(texture1, vs_texcoord); // mezclar imágenes y color
-	fs_color = texture(texture0, vs_texcoord) * texture(texture1, vs_texcoord); // mezclar imágenes y color
+	fs_color = texture(texture0, vs_texcoord) * texture(texture1, vs_texcoord) * vec4(vs_color, 1.f); // mezclar imágenes y color
+	//fs_color = texture(texture0, vs_texcoord) * texture(texture1, vs_texcoord); // mezclar imágenes y color
 }
