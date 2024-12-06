@@ -12,11 +12,11 @@
 // Vertices para el gráfico
 Vertex vertices[] =
 {
-	// Position                         // Color (R,G,B)                 // Texcoords
-	glm::vec3(-0.5f, 0.5f, 0.f),        glm::vec3(1.f, 0.f, 0.f),        glm::vec2(0.f, 1.f),
-	glm::vec3(-0.5f, -0.5f, 0.f),       glm::vec3(0.f, 1.f, 0.f),        glm::vec2(0.f, 0.f),
-	glm::vec3(0.5f, -0.5f, 0.f),        glm::vec3(0.f, 0.f, 1.f),        glm::vec2(1.f, 0.f),
-	glm::vec3(0.5f, 0.5f, 0.f),         glm::vec3(1.f, 1.f, 0.f),        glm::vec2(1.f, 1.f)
+	// Position                         // Color (R,G,B)                 // Texcoords               // Normals
+	glm::vec3(-0.5f, 0.5f, 0.f),        glm::vec3(1.f, 0.f, 0.f),        glm::vec2(0.f, 1.f),       glm::vec3(0.f, 0.f, -1.f),
+	glm::vec3(-0.5f, -0.5f, 0.f),       glm::vec3(0.f, 1.f, 0.f),        glm::vec2(0.f, 0.f),	    glm::vec3(0.f, 0.f, -1.f),
+	glm::vec3(0.5f, -0.5f, 0.f),        glm::vec3(0.f, 0.f, 1.f),        glm::vec2(1.f, 0.f),	    glm::vec3(0.f, 0.f, -1.f),
+	glm::vec3(0.5f, 0.5f, 0.f),         glm::vec3(1.f, 1.f, 0.f),        glm::vec2(1.f, 1.f),	    glm::vec3(0.f, 0.f, -1.f)
 };
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 
@@ -255,6 +255,9 @@ int main() {
 	// Texture coord
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord)); // Manejo de bits de almacenamiento
 	glEnableVertexAttribArray(2);
+	// Normal
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal)); // Manejo de bits de almacenamiento
+	glEnableVertexAttribArray(3);
 
 	// BIND VAO 0
 	glBindVertexArray(0);
@@ -345,10 +348,15 @@ int main() {
 
 	glUseProgram(core_program);
 
+	// LIGHTS
+	glm::vec3 lightPos0(0.f, 0.f, -2.f);
+
 	// INIT UNIFORMS
 	glUniformMatrix4fv(glGetUniformLocation(core_program, "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix)); // Primera inicialización
 	glUniformMatrix4fv(glGetUniformLocation(core_program, "ViewMatrix"), 1, GL_FALSE, glm::value_ptr(ViewMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(core_program, "ProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(ProjectionMatrix));
+
+	glUniform3fv(glGetUniformLocation(core_program, "lightPos"), 1, glm::value_ptr(lightPos0));
 
 	glUseProgram(0);
 
@@ -365,7 +373,7 @@ int main() {
 
 		// DRAW
 		// *Clear
-		glClearColor(1.f, 1.f, 1.f, 1.f); // BACKGROUND (R,G,B,A) | 4 arg para transparencia --> 1.f = no transparente
+		glClearColor(0.f, 0.f, 0.f, 1.f); // BACKGROUND (R,G,B,A) | 4 arg para transparencia --> 1.f = no transparente
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		// *Use a program
