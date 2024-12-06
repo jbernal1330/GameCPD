@@ -35,6 +35,39 @@ void updateInput(GLFWwindow* window) {
 	}
 }
 
+void updateInput(GLFWwindow* window, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale) {
+	// Movimiento adelante
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		position.z -= 0.01f;
+	}
+	// Movimiento atrás
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		position.z += 0.01f;
+	}
+	// Movimiento izquierda
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		position.x -= 0.01f;
+	}
+	// Movimiento derecha
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		position.x += 0.01f;
+	}
+	// Giro izquierda
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+		rotation.y -= 5.f;
+	}
+	// Giro derecha
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+		rotation.y += 5.f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+		scale += 0.1f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+		scale -= 0.1f;
+	}
+}
+
 // FRAMEBUFFER
 void framebuffer_resize_callback(GLFWwindow* window, int fbW, int fbH) {
 	glViewport(0, 0, fbW, fbH);
@@ -238,9 +271,9 @@ int main() {
 	glBindTexture(GL_TEXTURE_2D, texture0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Si la textura no cubre lo suficiente del espacio, se repite hasta hacerlo
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR); // Antializing si se hace zoom en la imagen/textura
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	if (image) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
@@ -281,12 +314,16 @@ int main() {
 	SOIL_free_image_data(image1); // Eliminar imagen de la memoria
 
 	// INIT MODEL MATRIX
+	glm::vec3 position(0.f);
+	glm::vec3 rotation(0.f);
+	glm::vec3 scale(1.f);
+
 	glm::mat4 ModelMatrix(1.f); // Inicializar matriz 4x4
-	ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.f, 0.f, 0.f)); // Translación de ModelMatrix
-	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(1.f, 0.f, 0.f)); // Rotación en X
-	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(0.f, 1.f, 0.f)); // Rotación en Y
-	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(0.f, 0.f, 1.f)); // Rotación en Z
-	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.f)); // Escalado --> Aumenta el tamaño de la imagen
+	ModelMatrix = glm::translate(ModelMatrix, position); // Translación de ModelMatrix
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.x), glm::vec3(1.f, 0.f, 0.f)); // Rotación en X
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.y), glm::vec3(0.f, 1.f, 0.f)); // Rotación en Y
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.z), glm::vec3(0.f, 0.f, 1.f)); // Rotación en Z
+	ModelMatrix = glm::scale(ModelMatrix, scale); // Escalado --> Aumenta el tamaño de la imagen
 
 	// CAMERA
 	glm::vec3 camPosition(0.f, 0.f, 1.f);
@@ -318,9 +355,10 @@ int main() {
 
 
 	// MAIN LOOP 
-	while(!glfwWindowShouldClose(window)) { // Mientras la ventana no sea cerrada
+	while (!glfwWindowShouldClose(window)) { // Mientras la ventana no sea cerrada
 		// UPDATE INPUT
 		glfwPollEvents(); // Permite interactuar con la ventana (cerrar, minimizar, etc)
+		updateInput(window, position, rotation, scale); // Movimientos
 
 		// UPDATE
 		updateInput(window);
@@ -338,11 +376,16 @@ int main() {
 		glUniform1i(glGetUniformLocation(core_program, "texture1"), 1);
 
 		// Move, rotate and scale
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.f, 0.f, 0.f)); // Movimiento X, Y, Z
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(1.f, 0.f, 0.f)); // Rotación en X
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(2.f), glm::vec3(0.f, 1.f, 0.f)); // Rotación en Y
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.f), glm::vec3(0.f, 0.f, 1.f)); // Rotación en Z
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.f)); // Escalado de imágenes
+		/*position.z -= 0.01f;
+		rotation.y += 2.f;
+		scale.x += 0.01f; */
+
+		ModelMatrix = glm::mat4(1.f);
+		ModelMatrix = glm::translate(ModelMatrix, position); // Movimiento
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.x), glm::vec3(1.f, 0.f, 0.f)); // Rotación en X
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.y), glm::vec3(0.f, 1.f, 0.f)); // Rotación en Y
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.z), glm::vec3(0.f, 0.f, 1.f)); // Rotación en Z
+		ModelMatrix = glm::scale(ModelMatrix, scale); // Escalado --> Aumenta el tamaño de la imagen
 
 		glUniformMatrix4fv(glGetUniformLocation(core_program, "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix));
 
