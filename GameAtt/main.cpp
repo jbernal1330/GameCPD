@@ -23,7 +23,7 @@ unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 // Creación de triángulos a partir de vértices
 GLuint indices[] =
 {
-	0, 1, 2, // Triangle 1 
+	0, 1, 2, // Triangle 1
 	0, 2, 3  // Triangle 2
 };
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
@@ -175,8 +175,8 @@ int main() {
 	glfwInit();
 
 	// CREATE WINDOW
-	const int WINDOW_WIDTH = 640;
-	const int WINDOW_HEIGHT = 480;
+	const int WINDOW_WIDTH = 1440;
+	const int WINDOW_HEIGHT = 1024;
 	int framebufferWidth = 0;
 	int framebufferHeight = 0;
 
@@ -387,7 +387,7 @@ int main() {
 		// Move, rotate and scale
 		/*position.z -= 0.01f;
 		rotation.y += 2.f;
-		scale.x += 0.01f; */
+		scale.x += 0.01f;*/
 
 		ModelMatrix = glm::mat4(1.f);
 		ModelMatrix = glm::translate(ModelMatrix, position); // Movimiento
